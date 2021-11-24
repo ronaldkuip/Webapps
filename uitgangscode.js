@@ -35,6 +35,7 @@ $(document).ready(function() {
   @desc Haal eventueel bestaand voedsel en een bestaande slang weg, cre\"eer een slang, genereer voedsel, en teken alles
 */
 function init() {		
+  alert("Dit is iets");
 }
 
 /**
