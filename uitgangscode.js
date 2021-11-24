@@ -32,7 +32,8 @@ $(document).ready(function() {
 
 /**
   @function init() -> void
-  @desc Haal eventueel bestaand voedsel en een bestaande slang weg, cre\"eer een slang, genereer voedsel, en teken alles
+  
+  cre\"eer een slang, genereer voedsel, en teken alles
 */
 function init() {		
   alert("Dit is iets");
@@ -43,7 +44,6 @@ function init() {
   @desc Beweeg slang in aangegeven richting
         tenzij slang uit canvas zou verdwijnen  
   @param   {string} direction de richting (een van de constanten UP, DOWN, LEFT of RIGHT)
-*/
 function move(direction) {
 	if (snake.canMove(direction)) {
 		snake.doMove(direction);
