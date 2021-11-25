@@ -46,15 +46,18 @@ function init() {
   foods = [];
 
   $("#mySnakeCanvas").clearCanvas()
-  //var test = new Element(2,1,1,SNAKE);
-  //console.log(test);
-
   createStartSnake();
-  console.log(snake.segments);
   foods = createFoods();
-  console.log( "Aantal objecten in foods:", foods.length);
-  console.log(foods);
   draw();
+  //
+  move(direction);
+ 
+  move(direction);
+  move(direction);
+  move(direction);
+  move(direction);
+  move(direction);
+ 
 }
 
 /**
@@ -80,12 +83,9 @@ function move(direction) {
 function draw() {
 	var canvas = $("#mySnakeCanvas").clearCanvas();
   for(i in foods) {
-    console.log("Draw for food", i);
     drawElement( foods[i], canvas);
   }
-  console.log("Waarom ken ik snake niet", snake.segments);
   for(i in snake.segments) {
-    console.log("Draw for snake", i);
     drawElement( snake.segments[i], canvas);
   }
   /* in te vullen */
@@ -100,6 +100,16 @@ function draw() {
 */ 
 function Snake(segments) {
 	/* in te vullen */
+  this.canMove = function (direction) { 
+    return validPosition( nextPosition( segments[segments.length-1]));
+  }
+  this.doMove = function (direction) {
+    for( i = 0; i < this.segments.length - 1; i++ ) {
+      segments[i].x = segments[i+1].x;
+      segments[i].y = segments[i+1].y;
+    }
+    segments[i] = nextPosition(segments[i], direction);
+  }
   this.segments = segments; /* zet segments array van elementen als object attribuut */
   /* rk: Snake wordt aangeroepen met create snake - die functie maakt geen onderscheid tussen kop en staart */
   this.segments[ segments.length - 1].color = HEAD;
@@ -176,8 +186,7 @@ function createFood(x, y) {
   @param  {dom object} canvas het tekenveld
 */
  function drawElement(element, canvas) {
-  console.log("drawElement", element.color);
-	canvas.drawArc({
+  canvas.drawArc({
 		draggable : false,
 		fillStyle : element.color,
 		x : element.x,
@@ -218,3 +227,23 @@ function createFoods() {
    return foods;
 }
 
+function nextPosition( element, direction ) {
+
+switch (direction) {
+  case LEFT: element.x = element.x - 2*R;
+  break;
+  case UP: element.y = element.y - 2*R; 
+  break;
+  case RIGHT: element.x = element.x + 2*R;
+  break;
+  case DOWN: element.y = element.y + 2*R;
+  break;
+  }
+  return element;
+}
+
+function validPosition( element ) {
+  if ( element.x < 0 || element.x > width ) return false;
+  if ( element.y < 0 || element.y > height) return false;
+  return true;
+}
