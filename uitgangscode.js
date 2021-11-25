@@ -15,7 +15,7 @@ const R        = 10,          // straal van een element
 
       SNAKE   = "DarkRed" ,   // kleur van een slangsegment
       FOOD    = "Olive",       // kleur van voedsel
-	  HEAD    = "DarkOrange"   // kleur van de kop van de slang
+	    HEAD    = "DarkOrange"   // kleur van de kop van de slang
 	
 var snake,
     foods = [],                                // voedsel voor de slang
@@ -36,7 +36,16 @@ $(document).ready(function() {
   cre\"eer een slang, genereer voedsel, en teken alles
 */
 function init() {		
-  alert("Dit is iets");
+
+  width = $("#mySnakeCanvas").width();
+  height = $("#mySnakeCanvas").height();
+  
+  $("#mySnakeCanvas").clearCanvas()
+  //var test = new Element(2,1,1,SNAKE);
+  //console.log(test);
+
+  var slang = createStartSnake();
+  console.log(slang);
 }
 
 /**
@@ -71,16 +80,25 @@ function draw() {
                    Het laatste element van segments wordt de kop van de slang 
 */ 
 function Snake(segments) {
-	/* in te vullen */}
+	/* in te vullen */
+  this.segments = segments; /* zet segments array van elementen als object attribuut */
+  /* rk: Snake wordt aangeroepen met create snake - die functie maakt geen onderscheid tussen kop en staart */
+  this.segments[ segments.length - 1].color = HEAD;
+}
+
 /**
    @constructor Element
-   @param radius straal
+   @param {number} radius straal (rk zelf aangevuld met number)
    @param {number} x x-coordinaat middelpunt
    @param {number} y y-coordinaat middelpunt
    @param {string} color kleur van het element
-*/ 
+*/
 function Element(radius, x, y, color) {
-		/* in te vullen */
+		/* in te vullen: rk - niet meer dan object attributen zetten */
+    this.radius = radius;
+    this.x = x;
+    this.y = y;
+    this.color = color;
 }
 /***************************************************************************
  **                 Hulpfuncties                                          **
@@ -96,6 +114,8 @@ function createStartSnake() {
 	var segments   = [createSegment(R + width/2, R + height/2), 
 	                  createSegment(R + width/2, height/2 - R)];
     snake = new Snake(segments);  
+    /* rk: toegevoegd */
+    return snake;
 }
 /**
   @function createSegment(x,y) -> Element
