@@ -51,7 +51,7 @@ function init() {
   draw();
   //
   move(direction);
- 
+  console.log("demonstratie" );
   move(direction);
   move(direction);
   move(direction);
