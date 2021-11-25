@@ -50,13 +50,11 @@ function init() {
   foods = createFoods();
   draw();
   //
+
+  direction = RIGHT;
   move(direction);
-  console.log("demonstratie" );
-  move(direction);
-  move(direction);
-  move(direction);
-  move(direction);
-  move(direction);
+ 
+  
  
 }
 
@@ -67,6 +65,7 @@ function init() {
   @param   {string} direction de richting (een van de constanten UP, DOWN, LEFT of RIGHT)
 **/
 function move(direction) {
+  console.log("Let's move: ", direction);
 	if (snake.canMove(direction)) {
 		snake.doMove(direction);
 		draw();
@@ -101,16 +100,36 @@ function draw() {
 function Snake(segments) {
 	/* in te vullen */
   this.canMove = function (direction) { 
-    return validPosition( nextPosition( segments[segments.length-1]));
+    var result = validPosition( nextPosition( segments[segments.length-1], direction));
+    console.log( "Can move", result, direction, segments[segments.length-1].x);
+    return result;
   }
   this.doMove = function (direction) {
-    for( i = 0; i < this.segments.length - 1; i++ ) {
-      segments[i].x = segments[i+1].x;
-      segments[i].y = segments[i+1].y;
+    console.log("Moving in direction: ",direction);
+
+    var segment = nextPosition( segments[ segments.length-1 ], direction);
+    segments[segments.length-1].x = segment.x;
+    segments[segments.length-1].y = segment.y;
+    
+    console.log("Nieuwe x locatie: ", segment.x);
+    for( i = segments.length - 1; i > 0; i-- ) {
+      if ( direction === RIGHT ) {
+         if ( segments[i-1].y !== segments[i].y ) { 
+           segments[i-1].y = segments[i].y; 
+         }
+         else { 
+           segment = nextPosition( segments[i-1], RIGHT );
+           segments[i-1].x = segment.x;
+           segments[i-1].y = segment.y;
+         }
+      }
     }
-    segments[i] = nextPosition(segments[i], direction);
-  }
-  this.segments = segments; /* zet segments array van elementen als object attribuut */
+    if ( direction === UP ) { 
+      segments[i] = nextPosition(segments[i], direction);
+    }
+  }  
+  /* rk: zet segments array van elementen als object attribuut */
+  this.segments = segments; 
   /* rk: Snake wordt aangeroepen met create snake - die functie maakt geen onderscheid tussen kop en staart */
   this.segments[ segments.length - 1].color = HEAD;
 }
@@ -142,7 +161,9 @@ function Element(radius, x, y, color) {
 function createStartSnake() {
 	var segments   = [createSegment(R + width/2, R + height/2), 
 	                  createSegment(R + width/2, height/2 - R)];
-    snake = new Snake(segments);  
+  // var segments   = [createSegment(330, 110), 
+  //                    createSegment(350, 110)];
+      snake = new Snake(segments);  
     /* rk: toegevoegd */
     // return snake;
 }
@@ -228,18 +249,21 @@ function createFoods() {
 }
 
 function nextPosition( element, direction ) {
-
-switch (direction) {
-  case LEFT: element.x = element.x - 2*R;
-  break;
-  case UP: element.y = element.y - 2*R; 
-  break;
-  case RIGHT: element.x = element.x + 2*R;
-  break;
-  case DOWN: element.y = element.y + 2*R;
-  break;
+  var segment = new Element( element.radius, element.x, element.y, element.color );
+  if ( segment.x === 350 ) {
+    console.log( "Wie doet mij wat");
   }
-  return element;
+  switch (direction) {
+    case LEFT: segment.x = segment.x - 2*R;
+    break;
+    case UP: segment.y = segment.y - 2*R; 
+    break;
+    case RIGHT: segment.x = segment.x + 2*R;
+    break;
+    case DOWN: segment.y = segment.y + 2*R;
+    break;
+  }
+  return segment;
 }
 
 function validPosition( element ) {
