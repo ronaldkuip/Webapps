@@ -6,7 +6,7 @@ const R        = 10,          // straal van een element
       UP       = "up",
       DOWN     = "down",
 
-      NUMFOODS = 15,          // aantal voedselelementen       
+      NUMFOODS = 3          // aantal voedselelementen   (rk: was 15, voor het makkelijk)    
 
       XMIN     = R,           // minimale x waarde 
       YMIN     = R,           // minimale y waarde 
@@ -22,7 +22,7 @@ var snake,
 	width,                    // breedte van het tekenveld
 	height,                   // hoogte van het tekenveld
 	xMax,                     // maximale waarde van x = width - R
-	ymax,                     // maximale waarde van y = height - R
+	yMax,                     // maximale waarde van y = height - R rk: stond ymin ip yMin
 	direction = UP;
 	
 $(document).ready(function() {
@@ -39,13 +39,18 @@ function init() {
 
   width = $("#mySnakeCanvas").width();
   height = $("#mySnakeCanvas").height();
-  
+  xMax = width - R;
+  yMax = height - R;
+
   $("#mySnakeCanvas").clearCanvas()
   //var test = new Element(2,1,1,SNAKE);
   //console.log(test);
 
   var slang = createStartSnake();
   console.log(slang);
+  foods = createFoods();
+  console.log( "Aantal objecten in foods:", foods.length);
+  console.log(foods);
 }
 
 /**
@@ -135,7 +140,20 @@ function createSegment(x, y) {
   @return: {Element} met straal R en color FOOD
 */
 function createFood(x, y) {
-	return new Element(R, x, y, FOOD);
+  var rr = new Element(R, x, y, FOOD);
+  rr.collidesWithOneOf = function(segments) {
+    var deltaX;
+    var deltaY;
+    for (i in segments) {
+      deltaX = (rr.x - segments[i].x) ** 2;
+      deltaY = (rr.y - segments[i].y) ** 2;
+      deltaR = Math.sqrt(deltaX+deltaY);
+      if ( deltaR <= 2 * R ) return true; 
+    }
+    return false;
+  };
+  return rr;
+  // rk oorspronkelijk gegeven - return new Element(R, x, y, FOOD);
 }
 /**
   @function drawElement(element, canvas) -> void
@@ -172,6 +190,7 @@ function getRandomInt(min, max) {
 function createFoods() {   
    var  i = 0,    
         food;
+   
    //we gebruiken een while omdat we, om een arraymethode te gebruiken, eerst een nieuw array zouden moeten creëren (met NUMFOODS elementen)
    while (i < NUMFOODS ) {
      food = createFood(XMIN + getRandomInt(0, xMax), YMIN + getRandomInt(0, yMax));
@@ -180,5 +199,7 @@ function createFoods() {
        i++
      }
    }  
+   /* rk: toegevoegd */
+   return foods;
 }
 
