@@ -42,15 +42,19 @@ function init() {
   xMax = width - R;
   yMax = height - R;
 
+  snake = null;
+  foods = [];
+
   $("#mySnakeCanvas").clearCanvas()
   //var test = new Element(2,1,1,SNAKE);
   //console.log(test);
 
-  var slang = createStartSnake();
-  console.log(slang);
+  createStartSnake();
+  console.log(snake.segments);
   foods = createFoods();
   console.log( "Aantal objecten in foods:", foods.length);
   console.log(foods);
+  draw();
 }
 
 /**
@@ -58,6 +62,7 @@ function init() {
   @desc Beweeg slang in aangegeven richting
         tenzij slang uit canvas zou verdwijnen  
   @param   {string} direction de richting (een van de constanten UP, DOWN, LEFT of RIGHT)
+**/
 function move(direction) {
 	if (snake.canMove(direction)) {
 		snake.doMove(direction);
@@ -74,7 +79,16 @@ function move(direction) {
 */
 function draw() {
 	var canvas = $("#mySnakeCanvas").clearCanvas();
-	/* in te vullen */
+  for(i in foods) {
+    console.log("Draw for food", i);
+    drawElement( foods[i], canvas);
+  }
+  console.log("Waarom ken ik snake niet", snake.segments);
+  for(i in snake.segments) {
+    console.log("Draw for snake", i);
+    drawElement( snake.segments[i], canvas);
+  }
+  /* in te vullen */
 }
 /***************************************************************************
  **                 Constructors                                          **
@@ -120,7 +134,7 @@ function createStartSnake() {
 	                  createSegment(R + width/2, height/2 - R)];
     snake = new Snake(segments);  
     /* rk: toegevoegd */
-    return snake;
+    // return snake;
 }
 /**
   @function createSegment(x,y) -> Element
@@ -162,6 +176,7 @@ function createFood(x, y) {
   @param  {dom object} canvas het tekenveld
 */
  function drawElement(element, canvas) {
+  console.log("drawElement", element.color);
 	canvas.drawArc({
 		draggable : false,
 		fillStyle : element.color,
