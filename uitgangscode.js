@@ -1,4 +1,4 @@
-import pipo from './DataModule.js';
+// import pipo from './DataModule.js';
 const R        = 10,          // straal van een element
       STEP     = 2*R,         // stapgrootte
                               // er moet gelden: WIDTH = HEIGHT
@@ -46,21 +46,23 @@ function init() {
 
   snake = null;
   foods = [];
+ 
 
   $("#mySnakeCanvas").clearCanvas()
   snake = createStartSnake();
   foods = createFoods();
   draw();
   //
-  jQuery(document).keydown(function (e) { switch (e.which) {
+  jQuery(document).keydown(function (e) { 
+    switch (e.which) {
     case 37: if ( direction !== RIGHT ) { direction = LEFT  }; break;
     case 38: if ( direction !== DOWN  ) { direction = UP    }; break;
-    case 39: if ( direction !== LEFT  ) { direction = RIGHT };;break;
+    case 39: if ( direction !== LEFT  ) { direction = RIGHT }; break;
     case 40: if ( direction !== UP    ) { direction = DOWN  }; break;
-    } });
+    } } );
 
   
-  pipo( "Astublieft");
+  // pipo( "Astublieft");
   direction = UP;
   startSnake();
 
@@ -72,8 +74,10 @@ function startSnake() {
 }
 
 function doSnake() {
+
   move(direction);
   draw();
+
 }
 function stopSnake() {
   clearInterval(snakeTimer);
@@ -159,7 +163,6 @@ function Snake(segments) {
     var food = null;
     for( i in foods ) {
       food = foods[i];
-      console.log("FOods: ", foods, " i: ", i);
       if (food.collidesWithOneOf(snake.segments) > -1) {
       // slang wordt eentje langer
       var newSegment = determineNewSnakeSegment();
@@ -222,12 +225,39 @@ function Element(radius, x, y, color) {
    var addSegment = nextPosition( lastSegment, richting );
    if ( validPosition( addSegment ) ) {
       return addSegment;
-   } else { // Kan denk ik niet voorkomen
-        stopSnake();
-        playerLost("Kan geen element aan de staart vastmaken");
-   }
-
+   } else { // Kan denk ik niet voorkomen - nou best wel dus, als je langs de lijnen gedraaid bent
+    // oplossing - een kwartslag te draaien, rechtsom, als dat niet werkt, linksom
+    // een van die mogelijkheden zou moeten werken
+      switch (richting) {
+        case DOWN:
+        case UP: nieuweRichting = RIGHT; break;
+        case LEFT:
+        case RIGHT: nieuweRichting = UP; break;
+      }
+      addSegment = nextPosition( lastSegment, nieuweRichting );
+      if ( validPosition( addSegment ) ) {
+        console.log("Eerste graads interventie");
+        return addSegment;
+      } else {
+        switch (richting) {
+          case DOWN:
+          case UP: nieuweRichting = LEFT; break;
+          case LEFT:
+          case RIGHT: nieuweRichting = DOWN; break;
+        }
+        addSegment = nextPosition( lastSegment, nieuweRichting );
+        if ( validPosition( addSegment ) ) {
+          console.log("Eerste graads interventie");
+          return addSegment;
+        } else {  
+            stopSnake();
+            playerLost("Kan geen element aan de staart vastmaken");
+        }
+      }
+    }
+  
  }
+
  function playerWon() {
   draw();
   const music = new Audio('https://www.wavsource.com/snds_2020-10-01_3728627494378403/sfx/cheering.wav');
@@ -235,8 +265,10 @@ function Element(radius, x, y, color) {
  }
 
  function playerLost(melding) {
+  draw();
   const music = new Audio('https://www.wavsource.com/snds_2020-10-01_3728627494378403/sfx/car_crash.wav');
   music.play();
+  alert(melding);
  }
 /**
   @function createStartSnake() -> Snake
