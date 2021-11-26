@@ -52,18 +52,16 @@ function init() {
   draw();
   //
   jQuery(document).keydown(function (e) { switch (e.which) {
-    case 37: direction = LEFT; break;
-    case 38: direction = UP; break;
-    case 39: direction = RIGHT;break;
-    case 40: direction = DOWN; break;
+    case 37: if ( direction !== RIGHT ) { direction = LEFT  }; break;
+    case 38: if ( direction !== DOWN  ) { direction = UP    }; break;
+    case 39: if ( direction !== LEFT  ) { direction = RIGHT };;break;
+    case 40: if ( direction !== UP    ) { direction = DOWN  }; break;
     } });
 
  
   direction = UP;
   startSnake();
- 
-  
- 
+
 }
 
 function startSnake() {
@@ -271,19 +269,19 @@ function createSegment(x, y) {
   @return: {Element} met straal R en color FOOD
 */
 function createFood(x, y) {
-  var rr = new Element(R, x, y, FOOD);
-  rr.collidesWithOneOf = function(segments) {
+  var element = new Element(R, x, y, FOOD);
+  element.collidesWithOneOf = function(segments) {
     var deltaX;
     var deltaY;
     for (i in segments) {
-      deltaX = (rr.x - segments[i].x) ** 2;
-      deltaY = (rr.y - segments[i].y) ** 2;
+      deltaX = (element.x - segments[i].x) ** 2;
+      deltaY = (element.y - segments[i].y) ** 2;
       deltaR = Math.sqrt(deltaX+deltaY);
       if ( deltaR <= 2 * R ) return i; 
     }
     return -1;
   };
-  return rr;
+  return element;
   // rk oorspronkelijk gegeven - return new Element(R, x, y, FOOD);
 }
 /**
@@ -321,17 +319,18 @@ function getRandomInt(min, max) {
 function createFoods() {   
    var  i = 0,    
         food;
-   
+   arrFoods = new Array;
+
    //we gebruiken een while omdat we, om een arraymethode te gebruiken, eerst een nieuw array zouden moeten creëren (met NUMFOODS elementen)
    while (i < NUMFOODS ) {
      food = createFood(XMIN + getRandomInt(0, xMax), YMIN + getRandomInt(0, yMax));
      if (food.collidesWithOneOf(snake.segments) === -1  && food.collidesWithOneOf(foods) === -1) {
-       foods.push(food);
+       arrFoods.push(food);
        i++
      }
    }  
    /* rk: toegevoegd */
-   return foods;
+   return arrFoods;
 }
 
 function nextPosition( element, direction ) {
