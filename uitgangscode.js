@@ -1,3 +1,4 @@
+import pipo from './DataModule.js';
 const R        = 10,          // straal van een element
       STEP     = 2*R,         // stapgrootte
                               // er moet gelden: WIDTH = HEIGHT
@@ -58,7 +59,8 @@ function init() {
     case 40: if ( direction !== UP    ) { direction = DOWN  }; break;
     } });
 
- 
+  
+  pipo( "Astublieft");
   direction = UP;
   startSnake();
 
