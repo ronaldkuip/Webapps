@@ -19,15 +19,16 @@ const R        = 10,          // straal van een element
 	
 var snake,
     foods = [],                                // voedsel voor de slang
-	width,                    // breedte van het tekenveld
-	height,                   // hoogte van het tekenveld
-	xMax,                     // maximale waarde van x = width - R
-	yMax,                     // maximale waarde van y = height - R rk: stond ymin ip yMin
-	direction = UP;
+	  width,                    // breedte van het tekenveld
+	  height,                   // hoogte van het tekenveld
+	  xMax,                     // maximale waarde van x = width - R
+	  yMax,                     // maximale waarde van y = height - R rk: stond ymin ip yMin
+	  direction = UP;
 	
 $(document).ready(function() {
 	$("#startSnake").click(init);  
-	$("#stopSnake").click(stop);
+  $("#contSnake").click(startSnake);
+	$("#stopSnake").click(stopSnake);
 });
 
 /**
@@ -50,14 +51,27 @@ function init() {
   foods = createFoods();
   draw();
   //
+  jQuery(document).keydown(function (e) { switch (e.which) {
+    case 37: direction = LEFT; break;
+    case 38: direction = UP; break;
+    case 39: direction = RIGHT;break;
+    case 40: direction = DOWN; break;
+    } });
 
-  direction = RIGHT;
-  move(direction);
+ 
+  direction = UP;
+  startSnake();
  
   
  
 }
 
+function startSnake() {
+  snakeTimer = setInterval(function() { move(direction); draw() }, SLEEPTIME);
+}
+function stopSnake() {
+  clearInterval(snakeTimer);
+}
 /**
   @function move(direction) -> void
   @desc Beweeg slang in aangegeven richting
@@ -65,8 +79,7 @@ function init() {
   @param   {string} direction de richting (een van de constanten UP, DOWN, LEFT of RIGHT)
 **/
 function move(direction) {
-  console.log("Let's move: ", direction);
-	if (snake.canMove(direction)) {
+  if (snake.canMove(direction)) {
 		snake.doMove(direction);
 		draw();
 	}
@@ -101,32 +114,45 @@ function Snake(segments) {
 	/* in te vullen */
   this.canMove = function (direction) { 
     var result = validPosition( nextPosition( segments[segments.length-1], direction));
-    console.log( "Can move", result, direction, segments[segments.length-1].x);
     return result;
   }
   this.doMove = function (direction) {
-    console.log("Moving in direction: ",direction);
+      
+    // beweeg de kop naar de nieuwe positie
 
-    var segment = nextPosition( segments[ segments.length-1 ], direction);
-    segments[segments.length-1].x = segment.x;
-    segments[segments.length-1].y = segment.y;
-    
-    console.log("Nieuwe x locatie: ", segment.x);
-    for( i = segments.length - 1; i > 0; i-- ) {
-      if ( direction === RIGHT ) {
-         if ( segments[i-1].y !== segments[i].y ) { 
-           segments[i-1].y = segments[i].y; 
-         }
-         else { 
-           segment = nextPosition( segments[i-1], RIGHT );
-           segments[i-1].x = segment.x;
-           segments[i-1].y = segment.y;
-         }
+    var oldSegment = Object.assign({}, segments[segments.length-1]);
+    var newSegment = nextPosition( segments[ segments.length-1 ], direction);
+    segments[segments.length-1].x = newSegment.x;
+    segments[segments.length-1].y = newSegment.y;
+    var swapSegment = null;
+
+    // schuif alle oude segmenten naar de plaats van hun verplaatste voorganger
+
+    for( i = segments.length - 2; i >= 0; i-- ) {
+       swapSegment = Object.assign({}, segments[i]); // waarschijnlijk geen shallow nodig
+       segments[i].x = oldSegment.x;
+       segments[i].y = oldSegment.y;
+       oldSegment = Object.assign({}, swapSegment); // waarschijnlijk geen shallow nodig
+    }
+
+    // kijk of de slang eten is tegengekomen
+    var food = null;
+    for( i in foods ) {
+      food = foods[i];
+      console.log("FOods: ", foods, " i: ", i);
+      if (food.collidesWithOneOf(snake.segments) > -1) {
+      // slang wordt eentje langer
+      var newSegment = determineNewSnakeSegment();
+      snake.segments.unshift(newSegment);
+      // food element uit array weghalen
+      var newFoods = foods.filter(function(x) { return x !== food })
+      foods = newFoods;
+      console.log( "Bijgewerkt", foods);
+      break;
       }
+
     }
-    if ( direction === UP ) { 
-      segments[i] = nextPosition(segments[i], direction);
-    }
+
   }  
   /* rk: zet segments array van elementen als object attribuut */
   this.segments = segments; 
@@ -152,6 +178,27 @@ function Element(radius, x, y, color) {
  **                 Hulpfuncties                                          **
  ***************************************************************************/
  
+ function determineNewSnakeSegment() {
+
+   var lastSegment = snake.segments[0];
+   var prevSegment = snake.segments[1];
+
+   var richting = "";
+   if ( lastSegment.x < prevSegment.x ) { richting = LEFT; }
+    else {
+     if ( prevSegment.x < lastSegment.x ) { richting = RIGHT; } 
+       else {
+        if ( lastSegment.y < prevSegment.y ) { richting = UP; } 
+          else {
+            if ( prevSegment.y < lastSegment.y ) { richting = DOWN; } 
+              else { console.log( "Er klopt iets niets bij het eten"); }
+          }
+       }
+      }
+
+   return nextPosition( lastSegment, richting );
+
+ }
 /**
   @function createStartSnake() -> Snake
   @desc Slang creëren, bestaande uit  twee segmenten, 
@@ -193,9 +240,9 @@ function createFood(x, y) {
       deltaX = (rr.x - segments[i].x) ** 2;
       deltaY = (rr.y - segments[i].y) ** 2;
       deltaR = Math.sqrt(deltaX+deltaY);
-      if ( deltaR <= 2 * R ) return true; 
+      if ( deltaR <= 2 * R ) return i; 
     }
-    return false;
+    return -1;
   };
   return rr;
   // rk oorspronkelijk gegeven - return new Element(R, x, y, FOOD);
@@ -239,7 +286,7 @@ function createFoods() {
    //we gebruiken een while omdat we, om een arraymethode te gebruiken, eerst een nieuw array zouden moeten creëren (met NUMFOODS elementen)
    while (i < NUMFOODS ) {
      food = createFood(XMIN + getRandomInt(0, xMax), YMIN + getRandomInt(0, yMax));
-     if (!food.collidesWithOneOf(snake.segments) && !food.collidesWithOneOf(foods) ) {
+     if (food.collidesWithOneOf(snake.segments) === -1  && food.collidesWithOneOf(foods) === -1) {
        foods.push(food);
        i++
      }
@@ -250,9 +297,7 @@ function createFoods() {
 
 function nextPosition( element, direction ) {
   var segment = new Element( element.radius, element.x, element.y, element.color );
-  if ( segment.x === 350 ) {
-    console.log( "Wie doet mij wat");
-  }
+  
   switch (direction) {
     case LEFT: segment.x = segment.x - 2*R;
     break;
