@@ -6,7 +6,7 @@ const R        = 10,          // straal van een element
       UP       = "up",
       DOWN     = "down",
 
-      NUMFOODS = 3          // aantal voedselelementen   (rk: was 15, voor het makkelijk)    
+      NUMFOODS = 15         // aantal voedselelementen   (rk: was 15, voor het makkelijk)    
 
       XMIN     = R,           // minimale x waarde 
       YMIN     = R,           // minimale y waarde 
@@ -47,7 +47,7 @@ function init() {
   foods = [];
 
   $("#mySnakeCanvas").clearCanvas()
-  createStartSnake();
+  snake = createStartSnake();
   foods = createFoods();
   draw();
   //
@@ -67,7 +67,13 @@ function init() {
 }
 
 function startSnake() {
-  snakeTimer = setInterval(function() { move(direction); draw() }, SLEEPTIME);
+ 
+  snakeTimer = setInterval(function() { doSnake() }, SLEEPTIME);
+}
+
+function doSnake() {
+  move(direction);
+  draw();
 }
 function stopSnake() {
   clearInterval(snakeTimer);
@@ -84,7 +90,9 @@ function move(direction) {
 		draw();
 	}
 	else {
-		console.log("snake cannot move " + direction);
+		stopSnake();
+    playerLost("Je loopt uit het canvas");
+
 	}
 }
 
@@ -135,7 +143,19 @@ function Snake(segments) {
        oldSegment = Object.assign({}, swapSegment); // waarschijnlijk geen shallow nodig
     }
 
-    // kijk of de slang eten is tegengekomen
+    // ben ik tegen mezelf aangelopen?
+
+    var head = segments[segments.length-1];
+    for( i = 0; i < segments.length - 2; i++ ) {
+      if ( segments[i].x === head.x && segments[i].y === head.y ) {
+        stopSnake();
+        playerLost( "Slang raakt zichzelf");
+        break;
+      }
+    }
+
+    // is hier iets te eten?
+
     var food = null;
     for( i in foods ) {
       food = foods[i];
@@ -147,7 +167,10 @@ function Snake(segments) {
       // food element uit array weghalen
       var newFoods = foods.filter(function(x) { return x !== food })
       foods = newFoods;
-      console.log( "Bijgewerkt", foods);
+      if ( foods.length === 0 ) {
+        stopSnake();
+        playerWon();
+      }
       break;
       }
 
@@ -191,13 +214,29 @@ function Element(radius, x, y, color) {
         if ( lastSegment.y < prevSegment.y ) { richting = UP; } 
           else {
             if ( prevSegment.y < lastSegment.y ) { richting = DOWN; } 
-              else { console.log( "Er klopt iets niets bij het eten"); }
+              else { alert( "Er klopt iets in determineNewSnakeSegment"); }
           }
        }
       }
+   
+   var addSegment = nextPosition( lastSegment, richting );
+   if ( validPosition( addSegment ) ) {
+      return addSegment;
+   } else { // Kan denk ik niet voorkomen
+        stopSnake();
+        playerLost("Kan geen element aan de staart vastmaken");
+   }
 
-   return nextPosition( lastSegment, richting );
+ }
+ function playerWon() {
+  draw();
+  const music = new Audio('https://www.wavsource.com/snds_2020-10-01_3728627494378403/sfx/cheering.wav');
+  music.play();
+ }
 
+ function playerLost(melding) {
+  const music = new Audio('https://www.wavsource.com/snds_2020-10-01_3728627494378403/sfx/car_crash.wav');
+  music.play();
  }
 /**
   @function createStartSnake() -> Snake
@@ -210,7 +249,7 @@ function createStartSnake() {
 	                  createSegment(R + width/2, height/2 - R)];
   // var segments   = [createSegment(330, 110), 
   //                    createSegment(350, 110)];
-      snake = new Snake(segments);  
+  return new Snake(segments);  
     /* rk: toegevoegd */
     // return snake;
 }
@@ -299,13 +338,13 @@ function nextPosition( element, direction ) {
   var segment = new Element( element.radius, element.x, element.y, element.color );
   
   switch (direction) {
-    case LEFT: segment.x = segment.x - 2*R;
+    case LEFT: segment.x = segment.x - STEP;
     break;
-    case UP: segment.y = segment.y - 2*R; 
+    case UP: segment.y = segment.y - STEP; 
     break;
-    case RIGHT: segment.x = segment.x + 2*R;
+    case RIGHT: segment.x = segment.x + STEP;
     break;
-    case DOWN: segment.y = segment.y + 2*R;
+    case DOWN: segment.y = segment.y + STEP;
     break;
   }
   return segment;
