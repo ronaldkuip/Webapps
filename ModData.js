@@ -1,6 +1,5 @@
 import {R,SNAKE, STEP, LEFT, RIGHT, UP, DOWN} from './ModConstants.js';
 
-
 function Element(radius, x, y, color) {
 	
     this.radius = radius;
@@ -39,6 +38,5 @@ function validPosition( element, speelveld ) {
     if (element.y < 0 || element.y > speelveld.y)   return false;
     return true;
   }
-
 
 export {Element, createSegment, validPosition, nextPosition};

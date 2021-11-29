@@ -1,4 +1,4 @@
-import {R, SLEEPTIME} from './ModConstants.js';
+import {UP, LEFT, RIGHT, DOWN, R, SLEEPTIME} from './ModConstants.js';
 import {createFoods} from './ModFoods.js';
 import {createStartSnake} from './ModSnake.js';
 import {playerLost, playerWon, draw} from './ModView.js';
@@ -57,10 +57,17 @@ function stopSnake() {
     clearInterval(snakeTimer);
 }
 
-/* Verwerk richting aangegeven door de pijltjes toetsen */
+/* Verwerk richting aangegeven door de pijltjes toetsen
+   Lopen in de tegenovergestelde richting wordt genegeerd (anders ben je per definitie dood)
+*/
 
 function setDirection( richting ) {
-    snake.direction = richting;
+  switch (richting) {
+    case LEFT : if ( snake.direction !== RIGHT ) { snake.direction = richting; }; break;
+    case UP   : if ( snake.direction !== DOWN  ) { snake.direction = richting; }; break;
+    case RIGHT: if ( snake.direction !== LEFT  ) { snake.direction = richting; }; break;
+    case DOWN : if ( snake.direction !== UP    ) { snake.direction = richting; }; break;
+  }
 }
 
 /* Beweeg de slag, eet voedsel wat je tegenkomt */
