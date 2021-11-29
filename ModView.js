@@ -1,14 +1,11 @@
-var gegeten,snake,snakeTimer;
-
 function playerWon() {
     const music = new Audio('applause3.mp3');
     music.play();
 }
   
-function playerLost(melding) {
+function playerLost() {
     const music = new Audio('boo3.mp3');
     music.play();
-    alert(melding);
 }
 
 function draw(snake, voedsel) {
@@ -17,6 +14,7 @@ function draw(snake, voedsel) {
     drawElement( voedsel[i], canvas);
   }
   for(i in snake.segments) {
+
     drawElement( snake.segments[i], canvas);
   }
 }
@@ -30,6 +28,5 @@ function drawElement(element, canvas) {
           radius : element.radius
       });
 }
-
 
 export { playerLost, playerWon, draw} ;

@@ -1,51 +1,80 @@
-import {SLEEPTIME} from './ModConstants.js';
+import {R, SLEEPTIME} from './ModConstants.js';
 import {createFoods} from './ModFoods.js';
 import {createStartSnake} from './ModSnake.js';
 import {playerLost, playerWon, draw} from './ModView.js';
 
-var gegeten,snake,snakeTimer;
+var speelveld,gegeten,snake,snakeTimer;
 
-function getWidth()  { return $("#mySnakeCanvas").width(); }
-function getHeight() { return $("#mySnakeCanvas").height();}
+/* Afhandelen winst en verlies */
+jQuery(document).on("eventSlangRaaktZichzelf", spelerVerliest);
+jQuery(document).on("eventSpelerWint", spelerWint);
 
-function startSnake() {
-    snake   = createStartSnake();
-    gegeten = createFoods(snake);
-    snakeTimer = setInterval(function() { 
-        gegeten = move(snake,gegeten); 
-        draw(snake,gegeten); 
-    }, SLEEPTIME);
+function spelerWint() {
+   stopSnake();
+   playerWon();
 }
 
-function stopSnake() {
-    if ( snake !== undefined ) {
-        draw(snake, gegeten);
-        clearInterval(snakeTimer);
-    }
+function spelerVerliest() {
+    stopSnake();
+    playerLost();
+ }
+
+ /* Netjes doorgeven afmeldingen van het speelveld via functie calls */
+
+function nieuwSpeelveld( width, height ) {
+    speelveld = new Speelveld( width, height, width - R, height - R );
+ }
+ 
+ function Speelveld(x, y, xMax, yMax) {
+     this.x = x;
+     this.y = y;
+     this.xMax = xMax;
+     this.yMax = yMax;
+ }
+
+ /* Opstarten spel */
+
+function startSnake() {
+    snake   = createStartSnake(speelveld);
+    gegeten = createFoods(snake,speelveld);
+    setTimer();
 }
 
 function cont() {
+    setTimer();
+}
+
+function setTimer() {
     snakeTimer = setInterval(function() { 
         gegeten = move(snake,gegeten); 
         draw(snake,gegeten); 
     }, SLEEPTIME);
 }
+
+/* Stoppen */
+function stopSnake() {
+    draw(snake, gegeten);
+    clearInterval(snakeTimer);
+}
+
+/* Verwerk richting aangegeven door de pijltjes toetsen */
 
 function setDirection( richting ) {
     snake.direction = richting;
 }
 
+/* Beweeg de slag, eet voedsel wat je tegenkomt */
+
 function move(snake,voedsel) {
      
-   if (snake.canMove()) { 
-          voedsel = snake.doMove(voedsel);
+   if (snake.canMove(speelveld)) { 
+          voedsel = snake.doMove(voedsel,speelveld);
           draw(snake,voedsel);
     }
     else {
-          stopSnake(snake);
-          playerLost("Je loopt uit het canvas");
+          spelerVerliest();
   }
   return voedsel;
 }
 
-export { cont, getWidth, getHeight, playerLost, playerWon, draw, startSnake, stopSnake, move, snake, setDirection};
+export { nieuwSpeelveld, snake, cont, startSnake, stopSnake, move, setDirection};

@@ -1,5 +1,6 @@
 import {R, FOOD, NUMFOODS, XMIN, YMIN} from './ModConstants.js';
-import {xMax,yMax,Element} from './ModData.js';
+import {Element} from './ModData.js';
+ 
 
 function createFood(x, y) {
     var element = new Element(R, x, y, FOOD);
@@ -18,14 +19,15 @@ function createFood(x, y) {
     return element;
 }
 
-function createFoods(snake) {   
+function createFoods(snake, speelveld) {
+    var s = speelveld;   
+    var t = speelveld.x;
     var  i = 0, food, arrFoods = new Array;
     var  empty = new Array;
     //we gebruiken een while omdat we, om een arraymethode te gebruiken, eerst een nieuw array zouden moeten creëren (met NUMFOODS elementen)
     while (i < NUMFOODS ) {
-      var x = xMax();
-      var y = yMax();
-      food = createFood(XMIN + getRandomInt(0, xMax()), YMIN + getRandomInt(0, yMax()));
+
+      food = createFood(XMIN + getRandomInt(0, speelveld.xMax), YMIN + getRandomInt(0, speelveld.yMax));
       if (food.collidesWithOneOf(snake.segments) === -1  && food.collidesWithOneOf(arrFoods) === -1) {
         arrFoods.push(food);
         i++
