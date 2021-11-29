@@ -35,8 +35,8 @@ function nextPosition( element, direction ) {
   
 function validPosition( element, speelveld ) {
     var x = speelveld;
-    if ( element.x < 0 || element.x > speelveld.x )  return false;
-    if ( element.y < 0 || element.y > speelveld.y)   return false;
+    if (element.x < 0 || element.x > speelveld.x)  return false;
+    if (element.y < 0 || element.y > speelveld.y)   return false;
     return true;
   }
 
