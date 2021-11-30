@@ -46,18 +46,18 @@ function Snake(segments, speeldveld) {
 
     // is hier iets te eten?
 
-    for( i in voedsel ) {
+    for(i in voedsel) {
       if (voedsel[i].collidesWithOneOf(this.segments) > -1) {   
          // De slag is verplaatst maar omdat er is gegeten komt het oude, verdwenen stukje slang weer terug
          // aan het einde van de slag (positie 0)
          this.segments.unshift(oldSegment);
-         voedsel = voedsel.filter(function(x) { return x !== voedsel[i] })
+         voedsel = voedsel.filter(function(hapjes) { return hapjes !== voedsel[i] } )
          if ( voedsel.length === 0 ) {
             $(document).trigger(($.Event("eventSpelerWint")));
          }
-         break; // Eén enkel brokje per keer
+         break; // een brokje per keer
        }
-    }
+    } 
     return voedsel;
   }  
   

@@ -10,13 +10,8 @@ function playerLost() {
 
 function draw(snake, voedsel) {
   var canvas = $("#mySnakeCanvas").clearCanvas();
-  for(var i in voedsel) {
-    drawElement( voedsel[i], canvas);
-  }
-  for(i in snake.segments) {
-
-    drawElement( snake.segments[i], canvas);
-  }
+  voedsel.forEach(function(hapje) { drawElement(hapje, canvas) } );
+  snake.segments.forEach(function(segment) { drawElement(segment, canvas) } );
 }
 
 function drawElement(element, canvas) {
