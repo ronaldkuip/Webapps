@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ModView.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ModView.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { creerSpeelveld, cont, init, stop, verwerkRichting} from './ModController.js';
+import { UP, LEFT, RIGHT, DOWN } from './ModConstants.js';
+
+"use strict";
+
+$(document).ready(function() {                    //Buttons laten verwijzen naar functies
+  $("#startSnake").click(startSpel);  
+  $("#contSnake").click(cont);                    //Uitbreiding - spel weer verder spelen als er tussentijds is gestopt
+  $("#stopSnake").click(stop);
+});
+
+/**
+ *  @function startSpel() -> void
+ *  @desc Definieer speelveld op basis van canvas en begin het spel
+ */
+
+function startSpel() {		
+
+  jQuery(document).keydown(function (e) {         //Ingedrukte toets lezen
+    switch (e.which) {                            //alles behalve de pijltjes toetsen negeren
+    case 37: verwerkRichting(LEFT);  break;
+    case 38: verwerkRichting(UP);    break;
+    case 39: verwerkRichting(RIGHT); break;
+    case 40: verwerkRichting(DOWN);  break;
+    } } );
+
+  // Geen globale variabelen, om de dimensies van het canvas niet telkens op te vragen 
+  // (dat 'mag' alleen in de view denk ik) maak ik singleton object aan in de helper module
+  // Dat object kan alleen maar benaderd worden met een get functie zodat de speelveld variabelen
+  // beschermd zijn.
+
+  creerSpeelveld( $("#mySnakeCanvas").width(), $("#mySnakeCanvas").height() );
+
+  // Laat de controller het spel starten
+  init();
+   
+}
+
+/**
+ * @function playerWon() -> void
+ * @desc Speel gejuich af
+ */
+function playerWon() {                              
+    const music = new Audio('applause3.mp3');
+    music.play();
+}
+  
+/**
+ *  @function playerLost() -> void
+ *  @desc Speel boegroep af
+ */
+function playerLost() {
+    const music = new Audio('boo3.mp3');
+    music.play();
+}
+/**
+ * @function draw() -> void
+ * @desc Schoon het canvas en teken de slang en het voedsel opnieuw
+ * @param  {Snake}   snake   slang object
+ * @param  {Element} voedsel array van voedsel elementen
+ */
+
+
+function draw(snake, voedsel) {  // canvas schonen, brokjes voedsel en slag tekenen
+  var canvas = $("#mySnakeCanvas").clearCanvas();
+  voedsel.forEach(function (hapje) { drawElement(hapje, canvas); } );
+  snake.forEach(function (segment) { drawElement(segment, canvas); } );
+}
+/**
+ * @function drawElement() -> void
+ * @desc Teken een element op het canvas
+ * @param  {Element} element
+ * @param  {}  canvas deel van het scherm waarop getekend wordt
+ */
+
+function drawElement(element, canvas) { // teken een brokje voedsel of een slangsegment
+    canvas.drawArc({
+          draggable : false,
+          fillStyle : element.color,
+          x : element.x,
+          y : element.y,
+          radius : element.radius
+      });
+}
+
+
+
+export { playerLost, playerWon, draw} ;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#canMove()-%253EBoolean">canMove() -> Boolean</a></li><li><a href="global.html#cont()-%253Evoid">cont() -> void</a></li><li><a href="global.html#createFood-%253EElement">createFood -> Element</a></li><li><a href="global.html#createFoods-%253EElement%255B%255D">createFoods -> Element[]</a></li><li><a href="global.html#createSegment-%253EElement">createSegment -> Element</a></li><li><a href="global.html#creerSpeelveld-%253Evoid">creerSpeelveld -> void</a></li><li><a href="global.html#doEat-%253Evoid">doEat -> void</a></li><li><a href="global.html#doMove-%253Evoid">doMove -> void</a></li><li><a href="global.html#draw()-%253Evoid">draw() -> void</a></li><li><a href="global.html#DrawableElement-%253Evoid">DrawableElement -> void</a></li><li><a href="global.html#drawElement()-%253Evoid">drawElement() -> void</a></li><li><a href="global.html#Element-%253EElement">Element -> Element</a></li><li><a href="global.html#getDirection-%253EString">getDirection -> String</a></li><li><a href="global.html#getFoods-%253EElement%255B%255D">getFoods -> Element[]</a></li><li><a href="global.html#getRandomInt-%253EInt">getRandomInt -> Int</a></li><li><a href="global.html#getSegments()-%253Esegments%255B%255D">getSegments() -> segments[]</a></li><li><a href="global.html#getSpeelveld-%253ESpeelveld">getSpeelveld -> Speelveld</a></li><li><a href="global.html#init-%253Evoid">init -> void</a></li><li><a href="global.html#isEmpty-%253Eboolean">isEmpty -> boolean</a></li><li><a href="global.html#move-%253Evoid">move -> void</a></li><li><a href="global.html#nextPosition-%253EElement">nextPosition -> Element</a></li><li><a href="global.html#nieuwSpeelveld-%253Evoid">nieuwSpeelveld -> void</a></li><li><a href="global.html#playAndAccelerate-%253Evoid">playAndAccelerate -> void</a></li><li><a href="global.html#playerLost()-%253Evoid">playerLost() -> void</a></li><li><a href="global.html#playerWon()-%253Evoid">playerWon() -> void</a></li><li><a href="global.html#runInto-%253EBoolean">runInto -> Boolean</a></li><li><a href="global.html#setFoods-%253Evoid">setFoods -> void</a></li><li><a href="global.html#setSegments()-%253Evoid">setSegments() -> void</a></li><li><a href="global.html#setTimer-%253Evoid">setTimer -> void</a></li><li><a href="global.html#Snackbar-%253Evoid">Snackbar -> void</a></li><li><a href="global.html#Snake-%253ESnake">Snake -> Snake</a></li><li><a href="global.html#snakeHead()-%253Eitem">snakeHead() -> item</a></li><li><a href="global.html#spelerVerliest-%253Evoid">spelerVerliest -> void</a></li><li><a href="global.html#spelerWint-%253Evoid">spelerWint -> void</a></li><li><a href="global.html#startSpel()-%253Evoid">startSpel() -> void</a></li><li><a href="global.html#stop-%253Evoid">stop -> void</a></li><li><a href="global.html#tryToEat-%253Evoid">tryToEat  -> void</a></li><li><a href="global.html#validPosition-%253EBoolean">validPosition -> Boolean</a></li><li><a href="global.html#verwerkRichting-%253Evoid">verwerkRichting -> void</a></li><li><a href="global.html#voorraad-%253Enumber">voorraad -> number</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Dec 21 2021 21:43:47 GMT+0100 (Midden-Europese standaardtijd)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

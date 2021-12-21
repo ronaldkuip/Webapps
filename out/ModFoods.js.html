@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ModFoods.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ModFoods.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {NUMFOODS, XMIN, YMIN} from './ModConstants.js';
+import {createFood,getSpeelveld,getRandomInt} from './ModHelper.js';
+"use strict";
+
+/* Bij het definieren van de 'klasse' Snackbar heb ik oop het volgende geprobeerd te letten
+/*
+/* Createfoods gaf een 'primitive' terug - ik zie dat dat inderdaad minder flexibel is, daarom object Snackbar gemaakt
+/* dat het array met voedselsegmenten als private variabele heeft.
+/*
+/* Alle methodes toegekent aan prototype
+/* Alle object variabelen afgeschermd via namespace 'priv'
+/* 
+/* Alle methodes beginnen met het ophalen van de private variabelen - waar nodig
+/* Alle methodes eindigen met het wegschrijven van private variabelen - waar nodig
+/* Ik denk dat dat het leven makkelijker maakt als de code naar typescript moet worden omgezet - dat kent vast wel private variabelen
+/*
+/* De klasse zelf heeft één verantwoordelijkheid - eten
+
+
+ /**
+ * @function createSnackbar -> Snackbar
+ * @desc Creeer snackbar
+ * @return  {Snackbar} De snackbar vol met snacks
+ */
+function createSnackbar(snake) {
+
+    return new Snackbar(snake);
+
+}
+
+/**
+ * @function createFoods -> Element[]
+ * @desc Creeer alle voedselelementen. Een voedsel element mag de slang niet raken. 
+ * @param   {Snake} snake
+ * @return  {Element} voedsel array
+ */
+function createFoods(snake) {
+
+    var  i = 0, food, arrFoods = new Array;
+    //we gebruiken een while omdat we, om een arraymethode te gebruiken, eerst een nieuw array zouden moeten creëren (met NUMFOODS elementen)
+    while (i &lt; NUMFOODS ) {
+
+      food = createFood(XMIN + getRandomInt(0, getSpeelveld().xMax), YMIN + getRandomInt(0, getSpeelveld().yMax));
+     
+      if ( (food.collidesWithOneOf(snake.priv.getSegments()) === -1 ) &amp;&amp; (food.collidesWithOneOf(arrFoods) === -1 ) ) {
+        arrFoods.push(food);
+        i++
+      }
+    }  
+    return arrFoods;
+ }
+
+ /**
+ * @function Snackbar -> void
+ * @desc Creeer snackbar. In de snackbar liggen alle snacks 
+ * @param   {Snake} snake
+ */
+ function Snackbar(snake) {
+
+  this.priv = (function() { 
+
+    var p_foods = createFoods(snake);
+    
+    return { getFoods        : function() { return p_foods; }, 
+             setFoods        : function(item) { p_foods = item; },
+           }
+  } () );
+ }
+
+ /**
+ * @function getFoods -> Element[]
+ * @desc Creeer alle voedselelementen. Een voedsel element mag de slang niet raken. 
+ * @return  {Element} voedsel array
+ */
+ Snackbar.prototype.getFoods = function() {
+
+     var foods = this.priv.getFoods();
+
+     return foods;
+ }
+
+ /**
+ * @function setFoods -> void
+ * @desc Overschrijf array met food - alleen voor testen. 
+ */
+  Snackbar.prototype.setFoods = function(data) { 
+    this.priv.setFoods(data);
+ }
+ /**
+ * @function voorraad -> number
+ * @desc Geeft aantal nog te eten snacks
+ * @return  {number} Aantal snacks in de snackbar
+ */
+ Snackbar.prototype.voorraad = function() {
+
+  var foods = this.priv.getFoods();
+
+  return foods.length;
+
+}
+
+
+ /**
+ * @function isEmpty -> boolean
+ * @desc Geeft aantal of de snackbar leeg is -> voedsel op -> spel klaar
+ * @return  {boolean} De snackbar is leeg
+ */
+  Snackbar.prototype.isEmpty = function() {
+
+    var foods = this.priv.getFoods();
+  
+    return foods.length === 0;
+  
+  }
+/**
+ * @function doEat -> void
+ * @desc Verwijder de aangegeven snack uit de snackbar 
+ * @param   {number} index van de snack in het foods array
+ */
+ Snackbar.prototype.doEat = function (index) {
+
+  var foods = this.priv.getFoods();
+
+  foods = foods.filter(function(snack) { return snack !== foods[index] } ) 
+
+  this.priv.setFoods(foods);
+ }
+export {createFoods,createSnackbar};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#canMove()-%253EBoolean">canMove() -> Boolean</a></li><li><a href="global.html#cont()-%253Evoid">cont() -> void</a></li><li><a href="global.html#createFood-%253EElement">createFood -> Element</a></li><li><a href="global.html#createFoods-%253EElement%255B%255D">createFoods -> Element[]</a></li><li><a href="global.html#createSegment-%253EElement">createSegment -> Element</a></li><li><a href="global.html#creerSpeelveld-%253Evoid">creerSpeelveld -> void</a></li><li><a href="global.html#doEat-%253Evoid">doEat -> void</a></li><li><a href="global.html#doMove-%253Evoid">doMove -> void</a></li><li><a href="global.html#draw()-%253Evoid">draw() -> void</a></li><li><a href="global.html#DrawableElement-%253Evoid">DrawableElement -> void</a></li><li><a href="global.html#drawElement()-%253Evoid">drawElement() -> void</a></li><li><a href="global.html#Element-%253EElement">Element -> Element</a></li><li><a href="global.html#getDirection-%253EString">getDirection -> String</a></li><li><a href="global.html#getFoods-%253EElement%255B%255D">getFoods -> Element[]</a></li><li><a href="global.html#getRandomInt-%253EInt">getRandomInt -> Int</a></li><li><a href="global.html#getSegments()-%253Esegments%255B%255D">getSegments() -> segments[]</a></li><li><a href="global.html#getSpeelveld-%253ESpeelveld">getSpeelveld -> Speelveld</a></li><li><a href="global.html#init-%253Evoid">init -> void</a></li><li><a href="global.html#isEmpty-%253Eboolean">isEmpty -> boolean</a></li><li><a href="global.html#move-%253Evoid">move -> void</a></li><li><a href="global.html#nextPosition-%253EElement">nextPosition -> Element</a></li><li><a href="global.html#nieuwSpeelveld-%253Evoid">nieuwSpeelveld -> void</a></li><li><a href="global.html#playAndAccelerate-%253Evoid">playAndAccelerate -> void</a></li><li><a href="global.html#playerLost()-%253Evoid">playerLost() -> void</a></li><li><a href="global.html#playerWon()-%253Evoid">playerWon() -> void</a></li><li><a href="global.html#runInto-%253EBoolean">runInto -> Boolean</a></li><li><a href="global.html#setFoods-%253Evoid">setFoods -> void</a></li><li><a href="global.html#setSegments()-%253Evoid">setSegments() -> void</a></li><li><a href="global.html#setTimer-%253Evoid">setTimer -> void</a></li><li><a href="global.html#Snackbar-%253Evoid">Snackbar -> void</a></li><li><a href="global.html#Snake-%253ESnake">Snake -> Snake</a></li><li><a href="global.html#snakeHead()-%253Eitem">snakeHead() -> item</a></li><li><a href="global.html#spelerVerliest-%253Evoid">spelerVerliest -> void</a></li><li><a href="global.html#spelerWint-%253Evoid">spelerWint -> void</a></li><li><a href="global.html#startSpel()-%253Evoid">startSpel() -> void</a></li><li><a href="global.html#stop-%253Evoid">stop -> void</a></li><li><a href="global.html#tryToEat-%253Evoid">tryToEat  -> void</a></li><li><a href="global.html#validPosition-%253EBoolean">validPosition -> Boolean</a></li><li><a href="global.html#verwerkRichting-%253Evoid">verwerkRichting -> void</a></li><li><a href="global.html#voorraad-%253Enumber">voorraad -> number</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Dec 21 2021 21:43:47 GMT+0100 (Midden-Europese standaardtijd)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
