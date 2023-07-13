@@ -1,0 +1,2 @@
+`C:\Users\YOUR_USER\AppData\Local\Google\Chrome\Application\chrome.exe --allow-file-access-from-files --disable-web-security`
+C:\Users\ronald\AppData\Local\Google\Chrome\Application\chrome.exe --allow-file-access-from-files --disable-web-security
